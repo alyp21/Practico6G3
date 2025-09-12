@@ -10,21 +10,17 @@ public class Categorias {
     public Categorias() {
     }
 
-    public Categorias(String Nombrecategoria) {
+    public Categorias(String NombreCategoria) {
         this.NombreCategoria = NombreCategoria;
     }
-
+    
     public String getNombrecategoria() {
         return NombreCategoria;
     }
 
-    public void setNombrecategoria(String Nombrecategoria) {
-        this.NombreCategoria = NombreCategoria;
-    }
-
     @Override
     public String toString() {
-        return "Categorias" + " " + NombreCategoria;
+        return NombreCategoria;
     }
 
     @Override
