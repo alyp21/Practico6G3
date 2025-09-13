@@ -1,5 +1,5 @@
 
-package Clases;
+package Ejercicio1Clases;
 
 import java.util.Objects;
 
