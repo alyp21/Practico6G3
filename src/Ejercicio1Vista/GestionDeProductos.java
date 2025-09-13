@@ -1,10 +1,10 @@
 
-package Vista;
+package Ejercicio1Vista;
 
-import Clases.Categoria;
-import Clases.CategoriaData;
-import Clases.Producto;
-import Clases.ProductoData;
+import Ejercicio1Clases.Categoria;
+import Ejercicio1Clases.CategoriaData;
+import Ejercicio1Clases.Producto;
+import Ejercicio1Clases.ProductoData;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
