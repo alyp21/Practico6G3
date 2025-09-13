@@ -229,7 +229,12 @@ public class GestionDeProductos extends javax.swing.JFrame {
         p.setPrecio(Double.parseDouble(jtfPrecio.getText()));
         p.setCategoria((Categoria) jcbCategoria.getSelectedItem());
         pd.guardarProducto(p);
-        
+        modelo.addRow(new Object[]{
+            p.getNombreProduc(),
+            p.getCategoria().getNombreCategoria(),
+            p.getPrecio()
+        });
+        limpiarCampos();
     }//GEN-LAST:event_jbAgregarActionPerformed
 
     /**
