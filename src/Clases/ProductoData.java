@@ -3,21 +3,19 @@ package Clases;
 
 import java.util.ArrayList;
 
-public class ProductoData {
-    public class ProductosData {
+  public class ProductoData {
 
     private final ArrayList<Producto> listaProductos = new ArrayList<>();
 
     public void guardarProducto(Producto p){
-        p.setIdProducto(listaProductos.size()+1);
         listaProductos.add(p);
     }
+
+        public ArrayList<Producto> getListaProductos() {
+            return listaProductos;
+        }
     
-    public ArrayList<Producto> obtenerProductos(){
-        return listaProductos;
-    }
-    
-    public void borraProducto(Producto p){
+    public void borrarProducto(Producto p){
         listaProductos.remove(p);
     }
     
@@ -33,5 +31,4 @@ public class ProductoData {
             }
         }
     }
-   }
 }

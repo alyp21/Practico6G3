@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class Producto {
     private int idProducto;
+    private String nombreProduc;
     private int codigo;
     private String descripcion;
     private double precio;
@@ -29,6 +30,24 @@ public class Producto {
         this.precio = precio;
         this.categoria = categoria;
         this.stock = stock;
+    }
+
+    public Producto(int idProducto, String nombreProduc, int codigo, String descripcion, double precio, Categoria categoria, int stock) {
+        this.idProducto = idProducto;
+        this.nombreProduc = nombreProduc;
+        this.codigo = codigo;
+        this.descripcion = descripcion;
+        this.precio = precio;
+        this.categoria = categoria;
+        this.stock = stock;
+    }
+
+    public String getNombreProduc() {
+        return nombreProduc;
+    }
+
+    public void setNombreProduc(String nombreProduc) {
+        this.nombreProduc = nombreProduc;
     }
 
     public int getCodigo() {
@@ -108,5 +127,5 @@ public class Producto {
             return false;
         }
         return true;
-    }
+    }  
 }
