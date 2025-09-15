@@ -1,12 +1,6 @@
 
 package Ejercicio2Clases;
 
-<<<<<<< HEAD
-
-public class ProductoSA {
-    // holi
-    //commit
-=======
 import java.util.Objects;
 
 
@@ -108,5 +102,4 @@ public class ProductoSA {
     public String toString() {
         return "Producto = " + "codigo: " + codigo + ", descripcion: " + descripcion + ", precio: " + precio + ", stock: " + stock + ", rubro: " + rubro;
     }
->>>>>>> 8b3edb8884ee61666dec3d2e6d52ab0584228bf2
 }
