@@ -374,4 +374,12 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
             jcbRubro.setEnabled(false);
             jsStock.setEnabled(false);
         }
+        
+        private void borrarFilas(){
+        int a= modelo.getRowCount()-1;
+            
+            for(int i=a;i>=0;i--){
+                modelo.removeRow(i);
+            }
+    }
 }
