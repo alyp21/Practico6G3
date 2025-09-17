@@ -1,8 +1,10 @@
 
 package Ejercicio2;
 
+import Ejercicio1.Producto;
 import static Ejercicio2.Menu.listaProductos;
 import java.util.Objects;
+import java.util.TreeSet;
 
 
 public class ProductoSA implements Comparable <ProductoSA>{
@@ -76,5 +78,23 @@ public class ProductoSA implements Comparable <ProductoSA>{
     }
     void guardarProducto(ProductoSA p) {
         listaProductos.add(p);
+    }
+    
+    public TreeSet<ProductoSA> getListaProductos() {
+            return listaProductos;
+    }
+        public void modificarProducto(ProductoSA productoNuevo){
+        for (ProductoSA it:listaProductos){
+            if(it.getCodigo()==productoNuevo.getCodigo()){
+                it.setDescripcion(productoNuevo.getDescripcion());
+                it.setRubro((Rubro)productoNuevo.getRubro());
+                it.setStock(productoNuevo.getStock());
+                it.setPrecio(productoNuevo.getPrecio());
+                break;
+            }
+        }
+    }
+        public void borrarProducto(Producto p){
+            listaProductos.remove(p);
     }
 }

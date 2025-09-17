@@ -1,9 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
- */
+
 package Ejercicio2;
 
+import static Ejercicio2.Menu.listaProductos;
 import Ejercicio2.ProductoSA;
 import Ejercicio2.Rubro;
 import javax.swing.JOptionPane;
@@ -19,8 +17,8 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
      * Creates new form GestionDeTodoSA
      */
     private ProductoSA prod;
-    private Rubro categ;
-     private DefaultTableModel modelo = new DefaultTableModel(){
+    private ProductoSA productoElegido;
+    private DefaultTableModel modelo = new DefaultTableModel(){
         public boolean isCellEditable(int f, int c){
             return false;
         }
@@ -28,7 +26,9 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
     public GestionDeTodoSA() {
         initComponents();
         prod = new ProductoSA();
+        productoElegido = new ProductoSA();
         armarCabecera();
+        cargarProductos();
     }
 
     /**
@@ -172,6 +172,11 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
         jbBuscar.setText("Buscar");
 
         jbCerrar.setText("Cerrar");
+        jbCerrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbCerrarActionPerformed(evt);
+            }
+        });
 
         jbNuevo.setText("Nuevo");
         jbNuevo.addActionListener(new java.awt.event.ActionListener() {
@@ -195,6 +200,11 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
         });
 
         jEliminar.setText("Eliminar");
+        jEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jEliminarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -282,7 +292,24 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jbNuevoActionPerformed
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
-        // TODO add your handling code here:
+        int codigo=Integer.parseInt(jtfCodigo.getText());
+        String descripcion=jtfDescripcion.getText();
+        double precio=Double.parseDouble(jtfPrecio.getText());
+        Rubro rubronuevo=(Rubro)jcbRubro.getSelectedItem();
+        int stock=(Integer)jsStock.getValue();
+
+        productoElegido.setCodigo(codigo);
+        productoElegido.setDescripcion(descripcion);
+        productoElegido.setPrecio(precio);
+        productoElegido.setStock(stock);
+        productoElegido.setRubro(rubronuevo);
+
+        prod.modificarProducto(productoElegido);
+        productoElegido=null;
+        limpiarCampos();
+        desactivarCampos();
+        llenarTablas();
+        jbActualizar.setEnabled(false);
     }//GEN-LAST:event_jbActualizarActionPerformed
 
     private void jbGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbGuardarActionPerformed
@@ -293,6 +320,7 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
           p.setRubro((Rubro)jcbRubro.getSelectedItem());
           p.setStock((Integer)jsStock.getValue());
           prod.guardarProducto(p);
+          
           limpiarCampos();
           
           desactivarCampos();
@@ -318,6 +346,14 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
             jtfDescripcion.requestFocus();
         }
     }//GEN-LAST:event_jtfDescripcionFocusLost
+
+    private void jbCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCerrarActionPerformed
+        dispose();
+    }//GEN-LAST:event_jbCerrarActionPerformed
+
+    private void jEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jEliminarActionPerformed
+
+    }//GEN-LAST:event_jEliminarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -374,7 +410,18 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
             jcbRubro.setEnabled(false);
             jsStock.setEnabled(false);
         }
-        
+        private void llenarTablas(){
+        borrarFilas();
+        Rubro elegido=(Rubro)jcbRubro.getSelectedItem();
+
+        if(elegido!=null){
+            for(ProductoSA p:prod.getListaProductos()){
+                if(p.getRubro().equals(elegido)){
+                    modelo.addRow(new Object[]{p.getCodigo(),p.getDescripcion(),p.getPrecio(),p.getRubro(),p.getStock()});
+                }
+            }
+        }
+    }
         private void borrarFilas(){
         int a= modelo.getRowCount()-1;
             
@@ -382,4 +429,12 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
                 modelo.removeRow(i);
             }
     }
+        private void cargarProductos(){
+            listaProductos.add(new ProductoSA(1,"Alfajor Tatin BLANCO",2.0,29,Rubro.COMESTIBLES));
+            listaProductos.add(new ProductoSA(2,"Pibe",3.0,25,Rubro.PERFUMERIA));
+            listaProductos.add(new ProductoSA(3,"Poet de Jazmin",7.0,21,Rubro.LIMPIEZA));
+        }
+        private void llenarCombos(){
+            
+        }
 }
