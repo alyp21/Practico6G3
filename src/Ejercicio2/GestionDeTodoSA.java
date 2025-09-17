@@ -1,11 +1,7 @@
 
 package Ejercicio2;
 
-import Ejercicio1.CategoriaData;
-import Ejercicio1.ProductoData;
-import static Ejercicio2.Menu.listaProductos;
 import Ejercicio2.ProductoSA;
-import Ejercicio2.Rubro;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -21,22 +17,15 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
      */
     private ProductoSA prod;
     private ProductoSA productoElegido;
-    private CategoriaData cd;
-    private ProductoData pd;
     DefaultComboBoxModel<Rubro> modeloCategorias = new DefaultComboBoxModel<>(Rubro.values());
-    private DefaultTableModel modelo = new DefaultTableModel(){
-        public boolean isCellEditable(int f, int c){
-            return false;
-        }
-    };
+    private DefaultTableModel modelo = new DefaultTableModel();
+    
     public GestionDeTodoSA() {
         initComponents();
         jcbRubro.setModel(new DefaultComboBoxModel<>(Rubro.values()));
         jcbFiltrarRubro.setModel(new DefaultComboBoxModel<>(Rubro.values()));
         prod = new ProductoSA();
         productoElegido = new ProductoSA();
-        cd= new CategoriaData();
-        pd= new ProductoData();
         armarCabecera();
         cargarProductos();
     }
@@ -80,6 +69,12 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
 
         jlFiltrar.setText("Filtrar por Categoria:");
 
+        jcbFiltrarRubro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jcbFiltrarRubroActionPerformed(evt);
+            }
+        });
+
         jtProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -91,6 +86,11 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
                 "Codigo", "Descripcion", "Precio", "Rubro", "Stock"
             }
         ));
+        jtProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jtProductosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jtProductos);
 
         jpProduc.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -302,40 +302,41 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jbNuevoActionPerformed
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
-        int codigo=Integer.parseInt(jtfCodigo.getText());
-        String descripcion=jtfDescripcion.getText();
-        double precio=Double.parseDouble(jtfPrecio.getText());
-        Rubro rubronuevo=(Rubro)jcbRubro.getSelectedItem();
-        int stock=(Integer)jsStock.getValue();
 
-        productoElegido.setCodigo(codigo);
-        productoElegido.setDescripcion(descripcion);
-        productoElegido.setPrecio(precio);
-        productoElegido.setStock(stock);
-        productoElegido.setRubro(rubronuevo);
+        if (productoElegido == null) {
+        JOptionPane.showMessageDialog(this, "Seleccione un producto de la tabla antes de actualizar.");
+        return;
+    }
+      try {
+        ProductoSA actualizado = obtenerProductoDesdeCampos();
+
+        productoElegido.setCodigo(actualizado.getCodigo());
+        productoElegido.setDescripcion(actualizado.getDescripcion());
+        productoElegido.setPrecio(actualizado.getPrecio());
+        productoElegido.setStock(actualizado.getStock());
+        productoElegido.setRubro(actualizado.getRubro());
 
         prod.modificarProducto(productoElegido);
-        productoElegido=null;
+
+        productoElegido = null;
         limpiarCampos();
         desactivarCampos();
         llenarTablas();
         jbActualizar.setEnabled(false);
+
+        JOptionPane.showMessageDialog(this, "El producto actualizado correctamente.");
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Verifique que los datos sean correctos.");
+      }                  
     }//GEN-LAST:event_jbActualizarActionPerformed
 
     private void jbGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbGuardarActionPerformed
-        ProductoSA p = new ProductoSA();
-          p.setCodigo(Integer.parseInt(jtfCodigo.getText()));
-          p.setDescripcion(jtfDescripcion.getText());
-          p.setPrecio(Double.parseDouble(jtfPrecio.getText()));
-          p.setRubro((Rubro)jcbRubro.getSelectedItem());
-          p.setStock((Integer)jsStock.getValue());
+          ProductoSA p = obtenerProductoDesdeCampos(); 
           prod.guardarProductos(p);
-          
+
           limpiarCampos();
-          
           desactivarCampos();
-          jbGuardar.setEnabled(false);
-          
+          jbGuardar.setEnabled(false);         
     }//GEN-LAST:event_jbGuardarActionPerformed
 
     private void jtfCodigoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jtfCodigoFocusLost
@@ -362,8 +363,72 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_jbCerrarActionPerformed
 
     private void jEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jEliminarActionPerformed
+        int filaSeleccionada = jtProductos.getSelectedRow();
 
+           if (filaSeleccionada == -1) {
+           JOptionPane.showMessageDialog(this, "Debe seleccionar un producto de la tabla para eliminar.");
+            return;
+        }
+
+        int codigo = (int) modelo.getValueAt(filaSeleccionada, 0);
+
+        ProductoSA productoAEliminar = null;
+        for (ProductoSA p : prod.getListaProductos()) {
+        if (p.getCodigo() == codigo) {
+            productoAEliminar = p;
+            break;
+        }
+    }
+
+    if (productoAEliminar != null) {
+        int opcion = JOptionPane.showConfirmDialog(this,
+                "Esta seguro que desea eliminar el producto? " + productoAEliminar.getDescripcion() + "?",
+                "Confirmar eliminacion: ", JOptionPane.YES_NO_OPTION);
+
+        if (opcion == JOptionPane.YES_OPTION) {
+            prod.borrarProducto(productoAEliminar);
+            llenarTablas();
+            JOptionPane.showMessageDialog(this, "Producto eliminado correctamente.");
+        }
+    } else {
+        JOptionPane.showMessageDialog(this, "No se encontro el producto en la lista.");
+    }
     }//GEN-LAST:event_jEliminarActionPerformed
+
+    private void jcbFiltrarRubroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbFiltrarRubroActionPerformed
+         Rubro rubroSeleccionado = (Rubro) jcbFiltrarRubro.getSelectedItem();
+        if(rubroSeleccionado != null){
+        llenarTablas();
+        }
+    }//GEN-LAST:event_jcbFiltrarRubroActionPerformed
+
+    private void jtProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jtProductosMouseClicked
+        jbActualizar.setEnabled(true);
+        jEliminar.setEnabled(true);
+        int filaElegida=jtProductos.getSelectedRow();
+
+        if(filaElegida!=1){
+            int codigo=(Integer)jtProductos.getValueAt(filaElegida,1);
+            String descripcion=(String)jtProductos.getValueAt(filaElegida,2);
+            double precio=(Double)jtProductos.getValueAt(filaElegida,3);
+            Rubro catTabla=(Rubro)jtProductos.getValueAt(filaElegida, 4);
+            int stock=(Integer)jtProductos.getValueAt(filaElegida,5);
+
+            jtfCodigo.setText(codigo+"");
+            jtfDescripcion.setText(descripcion);
+            jtfPrecio.setText(precio+"");
+            jcbFiltrarRubro.setSelectedItem(catTabla);
+            jsStock.setValue(stock);
+
+            activarCampos();
+            productoElegido=new ProductoSA();
+            productoElegido.setCodigo(codigo);
+            productoElegido.setDescripcion(descripcion);
+            productoElegido.setPrecio(precio);
+            productoElegido.setRubro(catTabla);
+            productoElegido.setStock(stock);
+        }
+    }//GEN-LAST:event_jtProductosMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -424,14 +489,10 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
         borrarFilas();
         Rubro elegido=(Rubro)jcbRubro.getSelectedItem();
 
-        if(elegido!=null){
             for(ProductoSA p:prod.getListaProductos()){
-                if(p.getRubro().equals(elegido)){
                     modelo.addRow(new Object[]{p.getCodigo(),p.getDescripcion(),p.getPrecio(),p.getRubro(),p.getStock()});
                 }
-            }
         }
-    }
         private void borrarFilas(){
         int a= modelo.getRowCount()-1;
             
@@ -440,24 +501,24 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
             }
     }
         private void cargarProductos(){
-            listaProductos.add(new ProductoSA(1,"Alfajor Tatin BLANCO",2.0,29,Rubro.COMESTIBLES));
-            listaProductos.add(new ProductoSA(2,"Pibe",3.0,25,Rubro.PERFUMERIA));
-            listaProductos.add(new ProductoSA(3,"Poet de Jazmin",7.0,21,Rubro.LIMPIEZA));
+            prod.guardarProductos(new ProductoSA(1,"Alfajor Tatin BLANCO",2.0,29,Rubro.COMESTIBLES));
+            prod.guardarProductos(new ProductoSA(2,"Pibe",3.0,25,Rubro.PERFUMERIA));
+            prod.guardarProductos(new ProductoSA(3,"Poet de Jazmin",7.0,21,Rubro.LIMPIEZA));
         }
         public void llenarCampos(ProductoSA p) {
-    jtfCodigo.setText(String.valueOf(p.getCodigo()));
-    jtfDescripcion.setText(p.getDescripcion());
-    jtfPrecio.setText(String.valueOf(p.getPrecio()));
-    jsStock.setValue(p.getStock());
-    jcbRubro.setSelectedItem(p.getRubro());
-    jcbFiltrarRubro.setSelectedItem(p.getRubro());
+           jtfCodigo.setText(String.valueOf(p.getCodigo()));
+           jtfDescripcion.setText(p.getDescripcion());
+           jtfPrecio.setText(String.valueOf(p.getPrecio()));
+           jsStock.setValue(p.getStock());
+           jcbRubro.setSelectedItem(p.getRubro());
+           jcbFiltrarRubro.setSelectedItem(p.getRubro());
         }
         public ProductoSA obtenerProductoDesdeCampos() {
-    int codigo = Integer.parseInt(jtfCodigo.getText());
-    String descripcion = jtfDescripcion.getText();
-    double precio = Double.parseDouble(jtfPrecio.getText());
-    int stock = (int)jsStock.getValue();
-    Rubro rubro = (Rubro) jcbRubro.getSelectedItem();
-    return new ProductoSA(codigo, descripcion, precio, stock, rubro);
-}
+           int codigo = Integer.parseInt(jtfCodigo.getText());
+           String descripcion = jtfDescripcion.getText();
+           double precio = Double.parseDouble(jtfPrecio.getText());
+           int stock = (int)jsStock.getValue();
+           Rubro rubro = (Rubro) jcbRubro.getSelectedItem();
+        return new ProductoSA(codigo, descripcion, precio, stock, rubro);
+    }
 }
