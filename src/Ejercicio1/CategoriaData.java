@@ -1,5 +1,5 @@
 
-package Ejercicio1Clases;
+package Ejercicio1;
 
 import java.util.ArrayList;
 
