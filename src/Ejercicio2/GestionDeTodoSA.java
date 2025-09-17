@@ -1,9 +1,12 @@
 
 package Ejercicio2;
 
+import Ejercicio1.CategoriaData;
+import Ejercicio1.ProductoData;
 import static Ejercicio2.Menu.listaProductos;
 import Ejercicio2.ProductoSA;
 import Ejercicio2.Rubro;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -18,6 +21,9 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
      */
     private ProductoSA prod;
     private ProductoSA productoElegido;
+    private CategoriaData cd;
+    private ProductoData pd;
+    DefaultComboBoxModel<Rubro> modeloCategorias = new DefaultComboBoxModel<>(Rubro.values());
     private DefaultTableModel modelo = new DefaultTableModel(){
         public boolean isCellEditable(int f, int c){
             return false;
@@ -25,8 +31,12 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
     };
     public GestionDeTodoSA() {
         initComponents();
+        jcbRubro.setModel(new DefaultComboBoxModel<>(Rubro.values()));
+        jcbFiltrarRubro.setModel(new DefaultComboBoxModel<>(Rubro.values()));
         prod = new ProductoSA();
         productoElegido = new ProductoSA();
+        cd= new CategoriaData();
+        pd= new ProductoData();
         armarCabecera();
         cargarProductos();
     }
@@ -319,7 +329,7 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
           p.setPrecio(Double.parseDouble(jtfPrecio.getText()));
           p.setRubro((Rubro)jcbRubro.getSelectedItem());
           p.setStock((Integer)jsStock.getValue());
-          prod.guardarProducto(p);
+          prod.guardarProductos(p);
           
           limpiarCampos();
           
@@ -434,7 +444,20 @@ public class GestionDeTodoSA extends javax.swing.JInternalFrame {
             listaProductos.add(new ProductoSA(2,"Pibe",3.0,25,Rubro.PERFUMERIA));
             listaProductos.add(new ProductoSA(3,"Poet de Jazmin",7.0,21,Rubro.LIMPIEZA));
         }
-        private void llenarCombos(){
-            
+        public void llenarCampos(ProductoSA p) {
+    jtfCodigo.setText(String.valueOf(p.getCodigo()));
+    jtfDescripcion.setText(p.getDescripcion());
+    jtfPrecio.setText(String.valueOf(p.getPrecio()));
+    jsStock.setValue(p.getStock());
+    jcbRubro.setSelectedItem(p.getRubro());
+    jcbFiltrarRubro.setSelectedItem(p.getRubro());
         }
+        public ProductoSA obtenerProductoDesdeCampos() {
+    int codigo = Integer.parseInt(jtfCodigo.getText());
+    String descripcion = jtfDescripcion.getText();
+    double precio = Double.parseDouble(jtfPrecio.getText());
+    int stock = (int)jsStock.getValue();
+    Rubro rubro = (Rubro) jcbRubro.getSelectedItem();
+    return new ProductoSA(codigo, descripcion, precio, stock, rubro);
+}
 }

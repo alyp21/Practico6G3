@@ -76,7 +76,7 @@ public class ProductoSA implements Comparable <ProductoSA>{
             return -1;
         }
     }
-    void guardarProducto(ProductoSA p) {
+    void guardarProductos(ProductoSA p) {
         listaProductos.add(p);
     }
     
